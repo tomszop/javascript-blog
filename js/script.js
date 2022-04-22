@@ -49,8 +49,9 @@
   const optArticleSelector = '.post',
     optTitleSelector = '.post-title',
     optTitleListSelector = '.titles',
-    optArticleTagsSelector = '.post-tags .list';
-
+    optArticleTagsSelector = '.post-tags .list',
+    optArticleAuthorSelector = '.post-author';
+    
   // eslint-disable-next-line no-inner-declarations
   function generateTitleLinks(customSelector = ''){
   
@@ -89,6 +90,8 @@
   }
   generateTitleLinks();
 
+  //GENERATE TAGS
+
   // eslint-disable-next-line no-inner-declarations
   function generateTags() {
   /* find all articles */
@@ -125,6 +128,8 @@
       /* END LOOP: for every article: */
     }
   }
+
+  
   generateTags();
 
   // eslint-disable-next-line no-inner-declarations
@@ -172,4 +177,98 @@
     }
   }
   addClickListenersToTags();
+
+  // GENERATE AUTHORS
+
+  // eslint-disable-next-line no-inner-declarations
+  function generateAuthors(){
+
+    /* find all articles */
+    const articles = document.querySelectorAll(optArticleSelector);
+    //console.log(articles);
+    /* START LOOP: for every article: */
+    for (let article of articles){
+
+      /* find author wrapper */
+      const authorWrapper = article.querySelector(optArticleAuthorSelector);
+
+      /* make html variable with empty string */
+      let html = '';
+
+      /* get author from data-author attribute */
+      const articleAuthor = article.getAttribute('data-author');
+
+      //for author generate html of the link - DONE
+      const linkHTML = 'autor: <a href="#author-' + articleAuthor + '">' + articleAuthor + '</a>';
+
+      //add code to html variable - DONE
+      html = linkHTML;
+
+      /* insert HTML of all the links into the author wrapper */
+      authorWrapper.innerHTML = html;
+
+      /* END LOOP: for every article: */
+    }
+  }
+  generateAuthors();
+
+  //---------Author click handler
+
+  // eslint-disable-next-line no-inner-declarations
+  function authorClickHandler(event){
+
+    /* prevent default action for this event */
+    event.preventDefault();
+
+    /* make new constant named "clickedElement" and give it the value of "this" */
+    const clickedElement = this;
+
+    /* make a new constant "href" and read the attribute "href" of the clicked element */
+    const href = clickedElement.getAttribute('href');
+
+    /* make a new constant "tag" and extract tag from the "href" constant */
+    const author = href.replace('#author-', '');
+
+    /* find all tag links with class active !!!*/
+    const activeAuthorLinks = document.querySelectorAll('a.active [href^="#author-"]');
+
+    /* START LOOP: for each active tag link */
+    for (let activeAuthorLink of activeAuthorLinks){
+
+      /* remove class active */
+      activeAuthorLink.classList.remove('.active');
+
+      /* END LOOP: for each active tag link */
+    }
+
+    /* find all author links with "href" attribute equal to the "href" constant */
+    const allAuthorHrefs = document.querySelectorAll('a[href="' + href + '"]');
+
+    /* START LOOP: for each found author link */
+    for(let authorHref of allAuthorHrefs){
+    /* END LOOP: for each found author link */
+      authorHref.classList.add('.active');
+    }
+
+    /* execute function "generateTitleLinks" with article selector as argument */
+    generateTitleLinks('[data-author="' + author + '"]');
+  }
+  
+  //-------- Click Listeners to Authors
+
+  // eslint-disable-next-line no-inner-declarations
+  function addClickListenersToAuthors () {
+
+    /* find all links to autors */
+    const allAuthorLinks = document.querySelectorAll('.post-author a, .authors a');
+
+    /* START LOOP: for each link */
+    for(let authorLink of allAuthorLinks){
+    //add authorClickHandler as event listener for that ink
+      authorLink.addEventListener('click', authorClickHandler);
+      // end loop for each link
+    }
+  }
+  addClickListenersToAuthors();
+
 }
